@@ -1,0 +1,12 @@
+﻿  CreateFlight.cpp
+  ListaDeVuelos.cpp
+  LoginForm.cpp
+  main.cpp
+  ModificarVuelo.cpp
+  Test.cpp
+  TicketsDb.cpp
+  UsersDb.cpp
+  .NETFramework,Version=v4.7.2.AssemblyAttributes.cpp
+  Generando código...
+  CreateFlight.obj : se encontró un módulo MSIL; vinculación incremental deshabilitada para MSIL; ejecutando vínculo completo
+  AeropuertosAurora.vcxproj -> C:\Users\divas\Downloads\AeropuertosAuroraV2\AeropuertosAurora\x64\Release\AeropuertosAurora.exe

@@ -1,0 +1,55 @@
+  AeropuertosAurora.CreateFlight.resources - Embedded, ContainedInManifestFile, 
+  AeropuertosAurora.ListaDeVuelos.resources - Embedded, ContainedInManifestFile, 
+  AeropuertosAurora.LoginForm.resources - Embedded, ContainedInManifestFile, 
+  AeropuertosAurora.ModificarVuelo.resources - Embedded, ContainedInManifestFile, 
+ImageRuntimeVersion: v4.0.30319
+Assembly AeropuertosAurora, Version=0.0.*, Culture=Todos los idiomas (todos los países): 
+	hash=SHA1, flags=PublicKey
+Assembly mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Assembly System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Assembly System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Assembly System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a: 
+	hash=None, flags=None
+Assembly System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Assembly System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089: 
+	hash=None, flags=None
+Class Ticket: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Fields:
+    System.String inicio : Public
+    System.String destino : Public
+    System.String fechaAbordaje : Public
+    System.String horaAbordaje : Public
+    System.String horaLlegada : Public
+    System.String reservacion : Public
+    Int32 bookingNumber : Public
+    System.String vuelo : Public
+    System.String asiento : Public
+    System.String operador : Public
+    System.String clienteName : Public
+Class TicketsDb: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+  Interfaces:
+    System.IDisposable
+  Methods:
+    MostrarTodosLosTickets(): PrivateScope, Public, HideBySig
+    CrearTicket(String, String, String, String, String, String, Int32, String, String, String, String): PrivateScope, Public, HideBySig
+    UpdateTicket(Int32, String, String, String, String, String, String, Int32, String, String, String, String): PrivateScope, Public, HideBySig
+    DeleteTicket(Int32): PrivateScope, Public, HideBySig
+    Dispose(): PrivateScope, Public, Final, Virtual, HideBySig
+Class AeropuertosAurora.CreateFlight: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+  :System.Windows.Forms.Form
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+Class AeropuertosAurora.ModificarVuelo: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+  :System.Windows.Forms.Form
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+Class AeropuertosAurora.FlightsListForm: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+  :System.Windows.Forms.Form
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName
+Class AeropuertosAurora.LoginForm: AutoLayout, AnsiClass, Class, Public, BeforeFieldInit
+  :System.Windows.Forms.Form
+    Void .ctor(): PrivateScope, Public, HideBySig, SpecialName, RTSpecialName

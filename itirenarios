@@ -1,0 +1,238 @@
+#include "itinerariosDb.h"
+#include <mysql.h>
+#include <string>
+#include <iostream>
+
+using namespace System;
+using namespace System::Collections::Generic;
+
+TicketsDb::TicketsDb() {}
+
+TicketsDb::~TicketsDb() {}
+
+List<Ticket^>^ TicketsDb::MostrarTodosLosTickets() {
+    auto tickets = gcnew List<Ticket^>();
+
+    MYSQL* conn = mysql_init(nullptr);
+    if (!conn) {
+        return tickets;
+    }
+    if (!mysql_real_connect(conn, "localhost", "root", "root123", "aeroaurora", 3306, nullptr, 0)) {
+        mysql_close(conn);
+        return tickets;
+    }
+
+    std::string query = "SELECT * FROM itinerarios";
+    if (mysql_query(conn, query.c_str())) {
+        mysql_close(conn);
+        return tickets;
+    }
+
+    MYSQL_RES* res = mysql_store_result(conn);
+    if (!res) {
+        mysql_close(conn);
+        return tickets;
+    }
+
+    MYSQL_ROW row;
+    while ((row = mysql_fetch_row(res))) {
+        Ticket^ ticket = gcnew Ticket();
+        ticket->inicio = gcnew System::String(row[1]);
+        ticket->destino = gcnew System::String(row[2]);
+        ticket->fechaAbordaje = gcnew System::String(row[3]);
+        ticket->horaAbordaje = gcnew System::String(row[4]);
+        ticket->horaLlegada = gcnew System::String(row[5]);
+        ticket->reservacion = gcnew System::String(row[6]);
+        ticket->bookingNumber = row[7] ? atoi(row[7]) : 0;
+        ticket->vuelo = gcnew System::String(row[8]);
+        ticket->asiento = gcnew System::String(row[9]);
+        ticket->operador = gcnew System::String(row[10]);
+        ticket->clienteName = gcnew System::String(row[11]);
+        tickets->Add(ticket);
+    }
+
+    mysql_free_result(res);
+    mysql_close(conn);
+    return tickets;
+}
+
+bool TicketsDb::CrearTicket(
+    String^ inicio,
+    String^ destino,
+    String^ fechaAbordaje,
+    String^ horaAbordaje,
+    String^ horaLlegada,
+    String^ reservacion,
+    int bookingNumber,
+    String^ vuelo,
+    String^ asiento,
+    String^ operador,
+    String^ clienteName
+) {
+    IntPtr inicioPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(inicio);
+    IntPtr destinoPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(destino);
+    IntPtr fechaPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(fechaAbordaje);
+    IntPtr horaAbPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(horaAbordaje);
+    IntPtr horaLlPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(horaLlegada);
+    IntPtr reservPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(reservacion);
+    IntPtr vueloPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(vuelo);
+    IntPtr asientoPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(asiento);
+    IntPtr operadorPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(operador);
+    IntPtr clienteNamePtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(clienteName);
+
+    std::string inicioStr = static_cast<char*>(inicioPtr.ToPointer());
+    std::string destinoStr = static_cast<char*>(destinoPtr.ToPointer());
+    std::string fechaStr = static_cast<char*>(fechaPtr.ToPointer());
+    std::string horaAbStr = static_cast<char*>(horaAbPtr.ToPointer());
+    std::string horaLlStr = static_cast<char*>(horaLlPtr.ToPointer());
+    std::string reservStr = static_cast<char*>(reservPtr.ToPointer());
+    std::string vueloStr = static_cast<char*>(vueloPtr.ToPointer());
+    std::string asientoStr = static_cast<char*>(asientoPtr.ToPointer());
+    std::string operadorStr = static_cast<char*>(operadorPtr.ToPointer());
+    std::string clienteNameStr = static_cast<char*>(clienteNamePtr.ToPointer());
+
+    MYSQL* conn = mysql_init(nullptr);
+    if (!conn) {
+        return false;
+    }
+    if (!mysql_real_connect(conn, "localhost", "root", "root123", "aeroaurora", 3306, nullptr, 0)) {
+        mysql_close(conn);
+        return false;
+    }
+
+    std::string query =
+        "INSERT INTO itinerarios (origen, destinoFinal, fechaSalida, horaSalida, horaArribo, codigoReserva, numeroReserva, numeroVuelo, numeroAsiento, aerolinea, pasajero) VALUES ('" +
+        inicioStr + "', '" +
+        destinoStr + "', '" +
+        fechaStr + "', '" +
+        horaAbStr + "', '" +
+        horaLlStr + "', '" +
+        reservStr + "', " +
+        std::to_string(bookingNumber) + ", '" +
+        vueloStr + "', '" +
+        asientoStr + "', '" +
+        operadorStr + "', '" +
+        clienteNameStr + "')";
+
+    bool success = (mysql_query(conn, query.c_str()) == 0);
+
+    mysql_close(conn);
+
+    System::Runtime::InteropServices::Marshal::FreeHGlobal(inicioPtr);
+    System::Runtime::InteropServices::Marshal::FreeHGlobal(destinoPtr);
+    System::Runtime::InteropServices::Marshal::FreeHGlobal(fechaPtr);
+    System::Runtime::InteropServices::Marshal::FreeHGlobal(horaAbPtr);
+    System::Runtime::InteropServices::Marshal::FreeHGlobal(horaLlPtr);
+    System::Runtime::InteropServices::Marshal::FreeHGlobal(reservPtr);
+    System::Runtime::InteropServices::Marshal::FreeHGlobal(vueloPtr);
+    System::Runtime::InteropServices::Marshal::FreeHGlobal(asientoPtr);
+    System::Runtime::InteropServices::Marshal::FreeHGlobal(operadorPtr);
+    System::Runtime::InteropServices::Marshal::FreeHGlobal(clienteNamePtr);
+
+    return success;
+}
+
+bool TicketsDb::UpdateTicket(
+    int bookingNumberIdentificador,
+    String^ inicio,
+    String^ destino,
+    String^ fechaAbordaje,
+    String^ horaAbordaje,
+    String^ horaLlegada,
+    String^ reservacion,
+    int newBookingNumber,
+    String^ vuelo,
+    String^ asiento,
+    String^ operador,
+    String^ clienteName
+) {
+    IntPtr inicioPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(inicio);
+    IntPtr destinoPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(destino);
+    IntPtr fechaPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(fechaAbordaje);
+    IntPtr horaAbPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(horaAbordaje);
+    IntPtr horaLlPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(horaLlegada);
+    IntPtr reservPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(reservacion);
+    IntPtr vueloPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(vuelo);
+    IntPtr asientoPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(asiento);
+    IntPtr operadorPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(operador);
+    IntPtr clienteNamePtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(clienteName);
+
+    std::string inicioStr = static_cast<char*>(inicioPtr.ToPointer());
+    std::string destinoStr = static_cast<char*>(destinoPtr.ToPointer());
+    std::string fechaStr = static_cast<char*>(fechaPtr.ToPointer());
+    std::string horaAbStr = static_cast<char*>(horaAbPtr.ToPointer());
+    std::string horaLlStr = static_cast<char*>(horaLlPtr.ToPointer());
+    std::string reservStr = static_cast<char*>(reservPtr.ToPointer());
+    std::string vueloStr = static_cast<char*>(vueloPtr.ToPointer());
+    std::string asientoStr = static_cast<char*>(asientoPtr.ToPointer());
+    std::string operadorStr = static_cast<char*>(operadorPtr.ToPointer());
+    std::string clienteNameStr = static_cast<char*>(clienteNamePtr.ToPointer());
+
+    MYSQL* conn = mysql_init(nullptr);
+    if (!conn) {
+        return false;
+    }
+    if (!mysql_real_connect(conn, "localhost", "root", "root123", "aeroaurora", 3306, nullptr, 0)) {
+        mysql_close(conn);
+        return false;
+    }
+
+    std::string query =
+        "UPDATE itinerarios SET "
+        "origen='" + inicioStr +
+        "', destinoFinal='" + destinoStr +
+        "', fechaSalida='" + fechaStr +
+        "', horaSalida='" + horaAbStr +
+        "', horaArribo='" + horaLlStr +
+        "', codigoReserva='" + reservStr +
+        "', numeroReserva=" + std::to_string(newBookingNumber) +
+        ", numeroVuelo='" + vueloStr +
+        "', numeroAsiento='" + asientoStr +
+        "', aerolinea='" + operadorStr +
+        "', pasajero='" + clienteNameStr +
+        "' WHERE numeroReserva=" + std::to_string(bookingNumberIdentificador);
+
+    bool success = (mysql_query(conn, query.c_str()) == 0);
+
+    mysql_close(conn);
+
+    System::Runtime::InteropServices::Marshal::FreeHGlobal(inicioPtr);
+    System::Runtime::InteropServices::Marshal::FreeHGlobal(destinoPtr);
+    System::Runtime::InteropServices::Marshal::FreeHGlobal(fechaPtr);
+    System::Runtime::InteropServices::Marshal::FreeHGlobal(horaAbPtr);
+    System::Runtime::InteropServices::Marshal::FreeHGlobal(horaLlPtr);
+    System::Runtime::InteropServices::Marshal::FreeHGlobal(reservPtr);
+    System::Runtime::InteropServices::Marshal::FreeHGlobal(vueloPtr);
+    System::Runtime::InteropServices::Marshal::FreeHGlobal(asientoPtr);
+    System::Runtime::InteropServices::Marshal::FreeHGlobal(operadorPtr);
+    System::Runtime::InteropServices::Marshal::FreeHGlobal(clienteNamePtr);
+
+    return success;
+}
+
+bool TicketsDb::DeleteTicket(int bookingNumber) {
+    MYSQL* conn = mysql_init(nullptr);
+    if (!conn) {
+        return false;
+    }
+
+    if (!mysql_real_connect(conn, "localhost", "root", "root123", "aeroaurora", 3306, nullptr, 0)) {
+        mysql_close(conn);
+        return false;
+    }
+
+    std::string query = "DELETE FROM itinerarios WHERE numeroReserva = " + std::to_string(bookingNumber);
+
+    if (mysql_query(conn, query.c_str()) != 0) {
+        mysql_close(conn);
+        return false;
+    }
+
+    if (mysql_affected_rows(conn) == 0) {
+        mysql_close(conn);
+        return false;
+    }
+
+    mysql_close(conn);
+    return true;
+}
